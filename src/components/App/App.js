@@ -1,6 +1,8 @@
 import React from 'react';
 import Axios from 'axios';
 
+import ImageUpload from '../ImageUpload/ImageUpload';
+
 export default function App() {
 
   function triggerAxios() {
@@ -9,8 +11,7 @@ export default function App() {
 
   return (
     <div className="App">
-      <h1>Hello World</h1>
-      <button onClick={triggerAxios}>Trigger server!</button>
+      <ImageUpload />
     </div>
   );
 }
