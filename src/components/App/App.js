@@ -1,7 +1,7 @@
 import React from 'react';
 import Axios from 'axios';
 
-import ImageUpload from '../ImageUpload/ImageUpload';
+import MyUpload from '../MyUpload/MyUpload';
 
 export default function App() {
 
@@ -11,7 +11,7 @@ export default function App() {
 
   return (
     <div className="App">
-      <ImageUpload />
+      <MyUpload />
     </div>
   );
 }
