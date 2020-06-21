@@ -9,9 +9,15 @@ export default function App() {
     Axios.get('/api/aws');
   }
 
+  function clickDownload() {
+    Axios.get('/api/aws/download');
+  }
+
   return (
     <div className="App">
+      <button onClick={clickDownload}>Download File</button>
       <MyUpload />
+      
     </div>
   );
 }

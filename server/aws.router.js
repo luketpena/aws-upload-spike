@@ -2,31 +2,37 @@ const express = require('express');
 const fileUpload = require('express-fileupload');
 const router = express.Router();
 const dotenv = require('dotenv');
+const path = require('path');
 dotenv.config();
 
 const AWS_KEY_ID = process.env.AWS_KEY_ID || null;
 const AWS_KEY = process.env.AWS_KEY || null;
 
 const fs = require('fs');
-const aws = require('aws-sdk');
-const s3 = new aws.S3({
+const AWS = require('aws-sdk');
+AWS.config.update({region: 'us-east-2'})
+
+const s3 = new AWS.S3({
   accessKeyId: AWS_KEY_ID,
   secretAccessKey: AWS_KEY
 });
 
-function uploadFile(in_fileName) {
-  fs.readFile(fileName, (err,data)=>{
-    if (err) throw err;
-    const param = {
-      Bucket: 'ltpena-aws-spike',
-      Key: in_fileName,
-      Body: JSON.stringify(data,null,2)
-    };
-    s3.upload(params, function(s3Err,data) {
-      if (s3Err) throw s3Err;
-      console.log(`File uploaded successfully at ${data.Location}`);
-    })
-  })
+function uploadFile(file) {
+
+ var uploadParams = {
+   Bucket: 'ltpena-aws-spike',
+   Key: 'newfile.pdf',
+   Body: file.data
+ };
+
+ s3.upload (uploadParams, function(err,data) {
+   if (err) {
+     console.log('Error with AWS upload:', err);  
+   } else {
+     console.log('Upload Success!',data.location);
+     
+   }
+ })
 }
 
 
@@ -37,12 +43,33 @@ router.get('/', (req,res)=>{
 
 router.post('/upload', async (req,res)=>{
   try {
-    console.log('Incoming file:',req.files);
+    const incomingFile = req.files.file;
+    console.log('Incoming file:',incomingFile);
+    uploadFile(incomingFile);
     res.sendStatus(200);
   } catch(error) {
     console.log('Error uploading to S3:',error);
     res.sendStatus(400);
   }
-})
+});
+
+router.get('/download', async (req,res)=>{
+  try {
+    var params = {
+      Bucket: 'ltpena-aws-spike',
+      Key: 'newfile.pdf',
+    };
+
+    s3.getObject(params, function(err, data) {
+      if (err) console.log('Error!',err, err.stack); // an error occurred
+      else     console.log('Success!',data);           // successful response
+    });
+
+    res.sendStatus(200);
+  } catch(error) {
+    console.log('Error downloading file:', error);
+    res.sendStatus(400);
+  }
+ });
 
 module.exports = router;
